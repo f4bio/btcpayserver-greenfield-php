@@ -82,13 +82,13 @@ class Store extends AbstractClient
    */
   public function createStore(
     string $name,
-    string $website,
-    string $defaultCurrency,
-    string $invoiceExpiration,
-    string $monitoringExpiration,
-    string $speedPolicy,
-    string $lightningDescriptionTemplate,
-    string $paymentTolerance
+    string $website = null,
+    string $defaultCurrency = "BTC",
+    int $invoiceExpiration = 90,
+    int $monitoringExpiration = 90,
+    string $speedPolicy = "HighSpeed",
+    string $lightningDescriptionTemplate = null,
+    int $paymentTolerance = 0
   ): \BTCPayServer\Result\ApiKey {
     $url = $this->getApiUrl()."stores";
 
