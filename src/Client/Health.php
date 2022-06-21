@@ -8,9 +8,9 @@ class Health extends AbstractClient
 {
     public function getHealthStatus(): bool
     {
-        $url = $this->getApiUrl() . 'health';
-        $headers = $this->getRequestHeaders();
-        $method = 'GET';
+        $url = $this->getApiUrl()."health";
+      $headers = $this->getRequestHeaders();
+      $method = "GET";
 
         $response = $this->getHttpClient()->request($method, $url, $headers);
 

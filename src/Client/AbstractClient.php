@@ -14,13 +14,13 @@ use BTCPayServer\Http\Response;
 class AbstractClient
 {
     /** @var string */
-    private $apiKey;
+    private string $apiKey;
     /** @var string */
-    private $baseUrl;
+  private string $baseUrl;
     /** @var string */
-    private $apiPath = '/api/v1/';
+  private string $apiPath = '/api/v1/';
     /** @var ClientInterface */
-    private $httpClient;
+  private ClientInterface $httpClient;
 
     public function __construct(string $baseUrl, string $apiKey, ClientInterface $client = null)
     {
@@ -74,7 +74,6 @@ class AbstractClient
         ];
 
         $class = $exceptions[$response->getStatus()] ?? RequestException::class;
-        $e = new $class($method, $url, $response);
-        return $e;
+      return new $class($method, $url, $response);
     }
 }
