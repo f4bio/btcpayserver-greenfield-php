@@ -48,35 +48,7 @@ class Store extends AbstractClient
 
 
   /**
-   *
-   * TODO:
-   *
-   * {
-   * "name": "string",
-   * "website": "string",
-   * "defaultCurrency": "USD",
-   * "invoiceExpiration": 90,
-   * "monitoringExpiration": 90,
-   * "speedPolicy": "HighSpeed",
-   * "lightningDescriptionTemplate": "string",
-   * "paymentTolerance": 0,
-   * "anyoneCanCreateInvoice": false,
-   * "requiresRefundEmail": false,
-   * "lightningAmountInSatoshi": false,
-   * "lightningPrivateRouteHints": false,
-   * "onChainWithLnInvoiceFallback": false,
-   * "redirectAutomatically": false,
-   * "showRecommendedFee": true,
-   * "recommendedFeeBlockTarget": 1,
-   * "defaultLang": "en",
-   * "customLogo": "string",
-   * "customCSS": "string",
-   * "htmlTitle": "string",
-   * "networkFeeMode": "MultiplePaymentsOnly",
-   * "payJoinEnabled": false,
-   * "lazyPaymentMethods": false,
-   * "defaultPaymentMethod": "BTC"
-   * }
+   * Create a new Store
    *
    * @throws JsonException
    */
@@ -88,7 +60,22 @@ class Store extends AbstractClient
     int $monitoringExpiration = 90,
     string $speedPolicy = "HighSpeed",
     string $lightningDescriptionTemplate = null,
-    int $paymentTolerance = 0
+    int $paymentTolerance = 0,
+    bool $anyoneCanCreateInvoice = false,
+    bool $requiresRefundEmail = false,
+    bool $lightningAmountInSatoshi = false,
+    bool $lightningPrivateRouteHints = false,
+    bool $onChainWithLnInvoiceFallback = false,
+    bool $redirectAutomatically = false,
+    bool $showRecommendedFee = true,
+    string $defaultLang = "en",
+    string $customLogo = "",
+    string $customCSS = "",
+    string $htmlTitle = "",
+    string $networkFeeMode = "MultiplePaymentsOnly",
+    bool $payJoinEnabled = false,
+    bool $lazyPaymentMethods = false,
+    string $defaultPaymentMethod = "BTC"
   ): \BTCPayServer\Result\ApiKey {
     $url = $this->getApiUrl()."stores";
 
@@ -99,8 +86,27 @@ class Store extends AbstractClient
       [
         "name" => $name,
         "website" => $website,
-        // ...
-        // TODO:
+        "defaultCurrency" => $defaultCurrency,
+        "invoiceExpiration" => $invoiceExpiration,
+        "monitoringExpiration" => $monitoringExpiration,
+        "speedPolicy" => $speedPolicy,
+        "lightningDescriptionTemplate" => $lightningDescriptionTemplate,
+        "paymentTolerance" => $paymentTolerance,
+        "anyoneCanCreateInvoice" => $anyoneCanCreateInvoice,
+        "requiresRefundEmail" => $requiresRefundEmail,
+        "lightningAmountInSatoshi" => $lightningAmountInSatoshi,
+        "lightningPrivateRouteHints" => $lightningPrivateRouteHints,
+        "onChainWithLnInvoiceFallback" => $onChainWithLnInvoiceFallback,
+        "redirectAutomatically" => $redirectAutomatically,
+        "showRecommendedFee" => $showRecommendedFee,
+        "defaultLang" => $defaultLang,
+        "customLogo" => $customLogo,
+        "customCSS" => $customCSS,
+        "htmlTitle" => $htmlTitle,
+        "networkFeeMode" => $networkFeeMode,
+        "payJoinEnabled" => $payJoinEnabled,
+        "lazyPaymentMethods" => $lazyPaymentMethods,
+        "defaultPaymentMethod" => $defaultPaymentMethod
       ],
       JSON_THROW_ON_ERROR
     );
