@@ -75,7 +75,7 @@ class Store extends AbstractClient
     bool $payJoinEnabled = false,
     bool $lazyPaymentMethods = false,
     string $defaultPaymentMethod = "BTC"
-  ): \BTCPayServer\Result\ApiKey {
+  ): \BTCPayServer\Result\Store {
     $url = $this->getApiUrl()."stores";
 
     $headers = $this->getRequestHeaders();
@@ -113,9 +113,35 @@ class Store extends AbstractClient
     $response = $this->getHttpClient()->request($method, $url, $headers, $body);
 
     if ($response->getStatus() === 200) {
-      return new \BTCPayServer\Result\ApiKey(
+      return new \BTCPayServer\Result\Store(
         json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
       );
+    } else {
+      throw $this->getExceptionByStatusCode($method, $url, $response);
+    }
+  }
+
+  /**
+   *
+   * Remove store
+   * Removes the specified store. If there is another user with access, only your access will be removed.
+   *
+   * https://docs.btcpayserver.org/API/Greenfield/v1/#tag/Stores/paths/~1api~1v1~1stores~1{storeId}/delete
+   *
+   * @param  string  $storeId
+   * @return bool
+   */
+  public function removeStore(string $storeId): bool
+  {
+    $url = $this->getApiUrl()."stores".$storeId;
+
+    $headers = $this->getRequestHeaders();
+    $method = "DELETE";
+
+    $response = $this->getHttpClient()->request($method, $url, $headers);
+
+    if ($response->getStatus() === 200) {
+      return true;
     } else {
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
