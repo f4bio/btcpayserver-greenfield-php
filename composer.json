@@ -1,7 +1,6 @@
 {
   "name": "btcpayserver/btcpayserver-greenfield-php",
   "description": "BTCPay Server Greenfield API PHP client library.",
-  "version": "1.4.0",
   "type": "library",
   "license": "MIT",
   "authors": [

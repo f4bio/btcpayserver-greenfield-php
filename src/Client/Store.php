@@ -46,7 +46,6 @@ class Store extends AbstractClient
     }
   }
 
-
   /**
    * Create a new Store
    *
