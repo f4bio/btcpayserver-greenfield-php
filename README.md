@@ -67,4 +67,4 @@ We run static analyzer [Psalm](https://psalm.dev/) and [PHP-CS-fixer](https://gi
 We use PSR-12 code style to ensure proper formatting and spacing. You can test and format your code using composer commands. Before doing a PR you can run `composer cs-check` and `composer cs-fix` which will run php-cs-fixer.
 
 ### Greenfield API coverage
-Currently implemented functionality is tracked in [this sheet](https://docs.google.com/spreadsheets/d/1A1tMWYHGVkFWRgqfkW9GSGBRjzKZzsu5XMIW1NLs-xg/edit#gid=0) and will be updated sporadically. Check to see which areas still need work in case you want to contribute.
+Currently, implemented functionality is tracked in [this sheet](https://docs.google.com/spreadsheets/d/1A1tMWYHGVkFWRgqfkW9GSGBRjzKZzsu5XMIW1NLs-xg/edit#gid=0) and will be updated sporadically. Check to see which areas still need work in case you want to contribute.
