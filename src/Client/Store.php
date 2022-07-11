@@ -49,14 +49,40 @@ class Store extends AbstractClient
   /**
    * Create a new Store
    *
+   * https://docs.btcpayserver.org/API/Greenfield/v1/#tag/Stores/paths/~1api~1v1~1stores/post
+   *
+   * @param  string  $name  The name of the store
+   * @param  string|null  $website  The absolute url of the store
+   * @param  string  $defaultCurrency
+   * @param  int  $invoiceExpiration
+   * @param  int  $monitoringExpiration
+   * @param  string  $speedPolicy
+   * @param  string|null  $lightningDescriptionTemplate
+   * @param  int  $paymentTolerance
+   * @param  bool  $anyoneCanCreateInvoice
+   * @param  bool  $requiresRefundEmail
+   * @param  bool  $lightningAmountInSatoshi
+   * @param  bool  $lightningPrivateRouteHints
+   * @param  bool  $onChainWithLnInvoiceFallback
+   * @param  bool  $redirectAutomatically
+   * @param  bool  $showRecommendedFee
+   * @param  string  $defaultLang
+   * @param  string|null  $customLogo
+   * @param  string|null  $customCSS
+   * @param  string|null  $htmlTitle
+   * @param  string  $networkFeeMode
+   * @param  bool  $payJoinEnabled
+   * @param  bool  $lazyPaymentMethods
+   * @param  string  $defaultPaymentMethod
+   * @return \BTCPayServer\Result\Store
    * @throws JsonException
    */
   public function createStore(
     string $name,
     string $website = null,
-    string $defaultCurrency = "BTC",
-    int $invoiceExpiration = 90,
-    int $monitoringExpiration = 90,
+    string $defaultCurrency = "USD",
+    int $invoiceExpiration = 900,
+    int $monitoringExpiration = 3600,
     string $speedPolicy = "HighSpeed",
     string $lightningDescriptionTemplate = null,
     int $paymentTolerance = 0,
@@ -68,13 +94,13 @@ class Store extends AbstractClient
     bool $redirectAutomatically = false,
     bool $showRecommendedFee = true,
     string $defaultLang = "en",
-    string $customLogo = "",
-    string $customCSS = "",
-    string $htmlTitle = "",
+    string $customLogo = null,
+    string $customCSS = null,
+    string $htmlTitle = null,
     string $networkFeeMode = "MultiplePaymentsOnly",
     bool $payJoinEnabled = false,
     bool $lazyPaymentMethods = false,
-    string $defaultPaymentMethod = "BTC"
+    string $defaultPaymentMethod = "USD"
   ): \BTCPayServer\Result\Store {
     $url = $this->getApiUrl()."stores";
 
