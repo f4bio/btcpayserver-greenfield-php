@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace BTCPayServer\Client;
 
+use BTCPayServer\Result\StoreOnChainWalletAddress;
+use BTCPayServer\Result\StoreOnChainWalletFeeRate;
+use BTCPayServer\Result\StoreOnChainWalletTransaction;
+use BTCPayServer\Result\StoreOnChainWalletTransactionList;
+use BTCPayServer\Result\StoreOnChainWalletUTXOList;
+use JsonException;
+
 class StoreOnChainWallet extends AbstractClient
 {
-    public function getStoreOnChainWalletOverview(
+  /**
+   * @throws \JsonException
+   */
+  public function getStoreOnChainWalletOverview(
         string $storeId,
         string $cryptoCode
     ): \BTCPayServer\Result\StoreOnChainWallet {
@@ -28,7 +38,10 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function getStoreOnChainWalletFeeRate(
+  /**
+   * @throws \JsonException
+   */
+  public function getStoreOnChainWalletFeeRate(
         string $storeId,
         string $cryptoCode,
         ?int $blockTarget = null
@@ -47,7 +60,7 @@ class StoreOnChainWallet extends AbstractClient
         $response = $this->getHttpClient()->request($method, $url, $headers);
 
         if ($response->getStatus() === 200) {
-            return new \BTCPayServer\Result\StoreOnChainWalletFeeRate(
+            return new StoreOnChainWalletFeeRate(
                 json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
             );
         } else {
@@ -55,7 +68,10 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function getStoreOnChainWalletAddress(
+  /**
+   * @throws \JsonException
+   */
+  public function getStoreOnChainWalletAddress(
         string $storeId,
         string $cryptoCode,
         ?string $forceGenerate = 'false'
@@ -102,7 +118,10 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function getStoreOnChainWalletTransactions(
+  /**
+   * @throws \JsonException
+   */
+  public function getStoreOnChainWalletTransactions(
         string $storeId,
         string $cryptoCode,
         ?array $statusFilters = null,
@@ -133,7 +152,7 @@ class StoreOnChainWallet extends AbstractClient
         $response = $this->getHttpClient()->request($method, $url, $headers);
 
         if ($response->getStatus() === 200) {
-            return new \BTCPayServer\Result\StoreOnChainWalletTransactionList(
+            return new StoreOnChainWalletTransactionList(
                 json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
             );
         } else {
@@ -141,7 +160,10 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function createStoreOnChainWalletTransaction(
+  /**
+   * @throws \JsonException
+   */
+  public function createStoreOnChainWalletTransaction(
         string $storeId,
         string $cryptoCode,
         array $destinations,
@@ -183,7 +205,10 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function getStoreOnChainWalletTransaction(
+  /**
+   * @throws \JsonException
+   */
+  public function getStoreOnChainWalletTransaction(
         string $storeId,
         string $cryptoCode,
         string $transactionId
@@ -199,7 +224,7 @@ class StoreOnChainWallet extends AbstractClient
         $response = $this->getHttpClient()->request($method, $url, $headers);
 
         if ($response->getStatus() === 200) {
-            return new \BTCPayServer\Result\StoreOnChainWalletTransaction(
+            return new StoreOnChainWalletTransaction(
                 json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
             );
         } else {
@@ -207,10 +232,13 @@ class StoreOnChainWallet extends AbstractClient
         }
     }
 
-    public function getStoreOnChainWalletUTXOs(
+  /**
+   * @throws JsonException
+   */
+  public function getStoreOnChainWalletUTXOs(
         string $storeId,
         string $cryptoCode
-    ): \BTCPayServer\Result\StoreOnChainWalletUTXOList {
+    ): StoreOnChainWalletUTXOList {
         $url = $this->getApiUrl() . 'stores/' .
                     urlencode($storeId) . '/payment-methods' . '/OnChain' . '/' .
                     urlencode($cryptoCode) . '/wallet' . '/utxos';
@@ -221,7 +249,7 @@ class StoreOnChainWallet extends AbstractClient
         $response = $this->getHttpClient()->request($method, $url, $headers);
 
         if ($response->getStatus() === 200) {
-            return new \BTCPayServer\Result\StoreOnChainWalletUTXOList(
+            return new StoreOnChainWalletUTXOList(
                 json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
             );
         } else {
