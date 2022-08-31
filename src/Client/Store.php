@@ -2,7 +2,7 @@
 
 namespace BTCPayServer\Client;
 
-use BTCPayServer\Result\ApiKey;
+use BTCPayServer\Http\ResponseInterface;
 use JsonException;
 
 class Store extends AbstractClient
@@ -76,8 +76,8 @@ class Store extends AbstractClient
    * @param  string|null  $customLogo
    * @param  string|null  $customCSS
    * @param  string|null  $htmlTitle
-   * @return ApiKey
-   * @throws \JsonException
+   * @return Store
+   * @throws JsonException
    */
   public function createStore(
     string $name,
@@ -104,7 +104,7 @@ class Store extends AbstractClient
     string $customLogo = null,
     string $customCSS = null,
     string $htmlTitle = null,
-  ): ApiKey {
+  ): \BTCPayServer\Result\Store {
     $url = $this->getApiUrl()."stores";
 
     $headers = $this->getRequestHeaders();
@@ -143,11 +143,32 @@ class Store extends AbstractClient
     $response = $this->getHttpClient()->request($method, $url, $headers, $body);
 
     if ($response->getStatus() === 200) {
-      return new ApiKey(
+      return new \BTCPayServer\Result\Store(
         json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
       );
     } else {
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
+  }
+
+
+  /**
+   * Delete Store
+   *
+   * Removes the specified store. If there is another user with access, only your access will be removed.
+   *
+   * https://docs.btcpayserver.org/API/Greenfield/v1/#operation/Stores_DeleteStore
+   *
+   * @param  string  $storeId
+   * @return ResponseInterface
+   */
+  public function deleteStore(string $storeId): ResponseInterface
+  {
+    $url = $this->getApiUrl()."stores/".urlencode($storeId);
+
+    $headers = $this->getRequestHeaders();
+    $method = "DELETE";
+
+    return $this->getHttpClient()->request($method, $url, $headers);
   }
 }
