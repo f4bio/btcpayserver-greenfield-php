@@ -13,67 +13,79 @@ use BTCPayServer\Http\Response;
 
 class AbstractClient
 {
-    /** @var string */
-    private string $apiKey;
-    /** @var string */
+  /** @var string */
+  private string $apiKey;
+  /** @var string */
   private string $baseUrl;
-    /** @var string */
+  /** @var string */
   private string $apiPath = '/api/v1/';
-    /** @var ClientInterface */
+  /** @var ClientInterface */
   private ClientInterface $httpClient;
 
-    public function __construct(string $baseUrl, string $apiKey, ClientInterface $client = null)
-    {
-        $this->baseUrl = rtrim($baseUrl, '/');
-        $this->apiKey = $apiKey;
+  public function __construct(string $baseUrl, string $apiKey, ClientInterface $client = null)
+  {
+    $this->baseUrl = rtrim($baseUrl, '/');
+    $this->apiKey = $apiKey;
 
-        // Use the $client parameter to use a custom cURL client, for example if you need to disable CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER
-        if ($client === null) {
-            $client = new CurlClient();
-        }
-        $this->httpClient = $client;
+    // Use the $client parameter to use a custom cURL client,
+    // for example if you need to disable CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER
+    if ($client === null) {
+      $client = new CurlClient();
     }
+    $this->httpClient = $client;
+    $this->testConnection();
+  }
 
-    protected function getBaseUrl(): string
-    {
-        return $this->baseUrl;
-    }
+  protected function getBaseUrl(): string
+  {
+    return $this->baseUrl;
+  }
 
-    protected function getApiUrl(): string
-    {
-        return $this->baseUrl . $this->apiPath;
-    }
+  protected function getApiUrl(): string
+  {
+    return $this->baseUrl.$this->apiPath;
+  }
 
-    protected function getApiKey(): string
-    {
-        return $this->apiKey;
-    }
+  protected function getFullUrl(string $remaining): string
+  {
+    return sprintf("%s/%s/%s", $this->baseUrl, $this->apiPath, $remaining);
+  }
 
-    protected function getHttpClient(): ClientInterface
-    {
-        return $this->httpClient;
-    }
+  protected function getApiKey(): string
+  {
+    return $this->apiKey;
+  }
 
-    protected function getRequestHeaders(): array
-    {
-        return [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'Authorization' => 'token ' . $this->getApiKey()
-        ];
-    }
+  protected function getHttpClient(): ClientInterface
+  {
+    return $this->httpClient;
+  }
 
-    protected function getExceptionByStatusCode(
-        string $method,
-        string $url,
-        Response $response
-    ): RequestException {
-        $exceptions = [
-            ForbiddenException::STATUS => ForbiddenException::class,
-            BadRequestException::STATUS => BadRequestException::class,
-        ];
+  protected function testConnection(): void
+  {
+    $this->httpClient->request('GET', $this->getApiUrl());
+  }
 
-        $class = $exceptions[$response->getStatus()] ?? RequestException::class;
-      return new $class($method, $url, $response);
-    }
+  protected function getRequestHeaders(): array
+  {
+    return [
+      'Accept' => 'application/json',
+      'Content-Type' => 'application/json',
+      'Authorization' => 'token '.$this->getApiKey()
+    ];
+  }
+
+  protected function getExceptionByStatusCode(
+    string $method,
+    string $url,
+    Response $response
+  ): RequestException {
+    $exceptions = [
+      ForbiddenException::STATUS => ForbiddenException::class,
+      BadRequestException::STATUS => BadRequestException::class,
+    ];
+
+    $class = $exceptions[$response->getStatus()] ?? RequestException::class;
+    return new $class($method, $url, $response);
+  }
 }

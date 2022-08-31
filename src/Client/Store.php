@@ -106,10 +106,8 @@ class Store extends AbstractClient
     string $htmlTitle = null,
   ): \BTCPayServer\Result\Store {
     $url = $this->getApiUrl()."stores";
-
     $headers = $this->getRequestHeaders();
     $method = "POST";
-
     $body = json_encode(
       [
         "name" => $name,
@@ -143,6 +141,8 @@ class Store extends AbstractClient
     $response = $this->getHttpClient()->request($method, $url, $headers, $body);
 
     if ($response->getStatus() === 200) {
+//      return new \BTCPayServer\Result\Store(["id" => "abc"]);
+
       return new \BTCPayServer\Result\Store(
         json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
       );
@@ -150,7 +150,6 @@ class Store extends AbstractClient
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
   }
-
 
   /**
    * Delete Store
@@ -165,7 +164,6 @@ class Store extends AbstractClient
   public function deleteStore(string $storeId): ResponseInterface
   {
     $url = $this->getApiUrl()."stores/".urlencode($storeId);
-
     $headers = $this->getRequestHeaders();
     $method = "DELETE";
 

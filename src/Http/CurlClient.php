@@ -5,93 +5,98 @@ declare(strict_types=1);
 namespace BTCPayServer\Http;
 
 use BTCPayServer\Exception\ConnectException;
+use CurlHandle;
 
 /**
  * HTTP Client using cURL to communicate.
  */
 class CurlClient implements ClientInterface
 {
-    protected $curlOptions = [];
+  private CurlHandle $ch;
+  protected array $curlOptions = [];
 
-    /**
-     * Inits curl session adding any additional curl options set.
-     * @return false|resource
-     */
-    protected function initCurl()
-    {
-        // We cannot set a return type here as it is "resource" for PHP < 8 and CurlHandle for PHP >= 8.
-        $ch = curl_init();
-        if ($ch && count($this->curlOptions)) {
-            curl_setopt_array($ch, $this->curlOptions);
-        }
-        return $ch;
+  /**
+   * Inits curl session adding any additional curl options set.
+   * @return false|resource
+   */
+  protected function initCurl(): false|CurlHandle
+  {
+    // We cannot set a return type here as it is "resource" for PHP < 8 and CurlHandle for PHP >= 8.
+    $this->ch = curl_init();
+    if (count($this->curlOptions)) {
+      curl_setopt_array($this->ch, $this->curlOptions);
+    }
+    return $this->ch;
+  }
+
+  /**
+   * Use this method if you need to set any special parameters
+   * like disable CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER.
+   *
+   * @param  array  $options
+   * @return void
+   */
+  public function setCurlOptions(array $options): void
+  {
+    $this->curlOptions = $options;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function request(
+    string $method,
+    string $url,
+    array $headers = [],
+    string $body = ''
+  ): ResponseInterface {
+    $flatHeaders = [];
+    foreach ($headers as $key => $value) {
+      $flatHeaders[] = $key.': '.$value;
     }
 
-    /**
-     * Use this method if you need to set any special parameters like disable CURLOPT_SSL_VERIFYHOST and CURLOPT_SSL_VERIFYPEER.
-     * @return void
-     */
-    public function setCurlOptions(array $options)
-    {
-        $this->curlOptions = $options;
+    $this->ch = $this->initCurl();
+    curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($this->ch, CURLOPT_URL, $url);
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($this->ch, CURLOPT_HEADER, 1);
+    if ($body !== '') {
+      curl_setopt($this->ch, CURLOPT_POSTFIELDS, $body);
     }
+    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $flatHeaders);
 
-    /**
-     * @inheritdoc
-     */
-    public function request(
-        string $method,
-        string $url,
-        array  $headers = [],
-        string $body = ''
-    ): ResponseInterface {
-        $flatHeaders = [];
-        foreach ($headers as $key => $value) {
-            $flatHeaders[] = $key . ': ' . $value;
-        }
+    $response = curl_exec($this->ch);
 
-        $ch = $this->initCurl();
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        if ($body !== '') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $flatHeaders);
+    $status = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+    $headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
 
-        $response = curl_exec($ch);
+    $responseHeaders = [];
+    $responseBody = '';
 
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-
-        $responseHeaders = [];
-        $responseBody = '';
-
-        if ($response) {
-            $responseString = is_string($response) ? $response : '';
-            if ($responseString && $headerSize) {
-                $responseBody = substr($responseString, $headerSize);
-                $headerPart = substr($responseString, 0, $headerSize);
-                $headerParts = explode("\n", $headerPart);
-                foreach ($headerParts as $headerLine) {
-                    $headerLine = trim($headerLine);
-                    if ($headerLine) {
-                        $parts = explode(':', $headerLine);
-                        if (count($parts) === 2) {
-                            $key = $parts[0];
-                            $value = $parts[1];
-                            $responseHeaders[$key] = $value;
-                        }
-                    }
-                }
+    if ($response) {
+      $responseString = is_string($response) ? $response : '';
+      if ($responseString && $headerSize) {
+        $responseBody = substr($responseString, $headerSize);
+        $headerPart = substr($responseString, 0, $headerSize);
+        $headerParts = explode("\n", $headerPart);
+        foreach ($headerParts as $headerLine) {
+          $headerLine = trim($headerLine);
+          if ($headerLine) {
+            $parts = explode(':', $headerLine);
+            if (count($parts) === 2) {
+              $key = $parts[0];
+              $value = $parts[1];
+              $responseHeaders[$key] = $value;
             }
-        } else {
-            $errorMessage = curl_error($ch);
-            $errorCode = curl_errno($ch);
-            throw new ConnectException($errorMessage, $errorCode);
+          }
         }
-
-        return new Response($status, $responseBody, $responseHeaders);
+      }
+    } else {
+      $errorMessage = curl_error($this->ch);
+      $errorCode = curl_errno($this->ch);
+      throw new ConnectException($errorMessage, $errorCode);
     }
+
+    return new Response($status, $responseBody, $responseHeaders);
+  }
 }

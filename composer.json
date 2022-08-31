@@ -19,11 +19,17 @@
     "ext-curl": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
-    "ext-bcmath": "*"
+    "ext-bcmath": "*",
+    "vlucas/phpdotenv": "^5.4"
   },
   "autoload": {
     "psr-4": {
       "BTCPayServer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BTCPayServer\\Tests\\": "tests/"
     }
   },
   "require-dev": {
