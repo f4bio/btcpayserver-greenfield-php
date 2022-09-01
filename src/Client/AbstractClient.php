@@ -33,7 +33,7 @@ class AbstractClient
       $client = new CurlClient();
     }
     $this->httpClient = $client;
-    $this->testConnection();
+    //    $this->testConnection();
   }
 
   protected function getBaseUrl(): string
@@ -41,14 +41,14 @@ class AbstractClient
     return $this->baseUrl;
   }
 
-  protected function getApiUrl(): string
+  protected function getApiUrl(array $parts = []): string
   {
-    return $this->baseUrl.$this->apiPath;
-  }
-
-  protected function getFullUrl(string $remaining): string
-  {
-    return sprintf("%s/%s/%s", $this->baseUrl, $this->apiPath, $remaining);
+    $url = rtrim($this->baseUrl, "/");
+    $url .= "/".rtrim($this->apiPath, "/");
+    foreach ($parts as $part) {
+      $url .= "/".urlencode($part);
+    }
+    return $url;
   }
 
   protected function getApiKey(): string

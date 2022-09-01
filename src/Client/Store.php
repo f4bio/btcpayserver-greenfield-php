@@ -12,7 +12,7 @@ class Store extends AbstractClient
    */
   public function getStore($storeId): \BTCPayServer\Result\Store
   {
-    $url = $this->getApiUrl()."stores/".urlencode($storeId);
+    $url = $this->getApiUrl(["stores", $storeId]);
     $headers = $this->getRequestHeaders();
     $method = "GET";
     $response = $this->getHttpClient()->request($method, $url, $headers);
@@ -29,7 +29,7 @@ class Store extends AbstractClient
    */
   public function getStores(): array
   {
-    $url = $this->getApiUrl()."stores";
+    $url = $this->getApiUrl(["stores"]);
     $headers = $this->getRequestHeaders();
     $method = "GET";
     $response = $this->getHttpClient()->request($method, $url, $headers);
@@ -105,7 +105,7 @@ class Store extends AbstractClient
     string $customCSS = null,
     string $htmlTitle = null,
   ): \BTCPayServer\Result\Store {
-    $url = $this->getApiUrl()."stores";
+    $url = $this->getApiUrl(["stores"]);
     $headers = $this->getRequestHeaders();
     $method = "POST";
     $body = json_encode(
@@ -163,7 +163,7 @@ class Store extends AbstractClient
    */
   public function deleteStore(string $storeId): ResponseInterface
   {
-    $url = $this->getApiUrl()."stores/".urlencode($storeId);
+    $url = $this->getApiUrl(["stores", $storeId]);
     $headers = $this->getRequestHeaders();
     $method = "DELETE";
 

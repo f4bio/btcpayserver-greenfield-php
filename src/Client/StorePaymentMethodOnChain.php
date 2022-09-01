@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BTCPayServer\Client;
 
 use BTCPayServer\Result\Address;
+use BTCPayServer\Result\AddressList;
 
 /**
  * Handles stores on chain payment methods.
@@ -21,7 +22,7 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
    */
   public function getPaymentMethods(string $storeId): array
   {
-    $url = $this->getApiUrl().'stores/'.urlencode($storeId).'/payment-methods/'.self::PAYMENT_TYPE_ON_CHAIN;
+    $url = $this->getApiUrl(["stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN]);
     $headers = $this->getRequestHeaders();
     $method = 'GET';
     $response = $this->getHttpClient()->request($method, $url, $headers);
@@ -38,9 +39,12 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     }
   }
 
+  /**
+   * @throws \JsonException
+   */
   public function getPaymentMethod(string $storeId, string $cryptoCode): \BTCPayServer\Result\StorePaymentMethodOnChain
   {
-    $url = $this->getApiUrl().'stores/'.urlencode($storeId).'/payment-methods/'.self::PAYMENT_TYPE_ON_CHAIN.'/'.$cryptoCode;
+    $url = $this->getApiUrl(["stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode]);
     $headers = $this->getRequestHeaders();
     $method = 'GET';
     $response = $this->getHttpClient()->request($method, $url, $headers);
@@ -76,7 +80,7 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     string $cryptoCode,
     array $settings
   ): \BTCPayServer\Result\StorePaymentMethodOnChain {
-    $url = $this->getApiUrl().'stores/'.urlencode($storeId).'/payment-methods/'.self::PAYMENT_TYPE_ON_CHAIN.'/'.$cryptoCode;
+    $url = $this->getApiUrl(["stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode]);
     $headers = $this->getRequestHeaders();
     $method = 'PUT';
     $response = $this->getHttpClient()->request($method, $url, $headers, json_encode($settings));
@@ -101,17 +105,18 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
   public function previewPaymentMethodAddresses(string $storeId, string $cryptoCode): array
   {
     // todo: add offset + amount query parameters
-
-    $url = $this->generateUrl($storeId, $cryptoCode)."/preview";
+    $url = $this->getApiUrl([
+      "stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode, "preview"
+    ]);
     $headers = $this->getRequestHeaders();
     $method = 'GET';
     $response = $this->getHttpClient()->request($method, $url, $headers);
 
     if ($response->getStatus() === 200) {
-      $addressList = new \BTCPayServer\Result\AddressList(
+      $addressList = new AddressList(
         json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
       );
-      return $addressList->getAddresses();
+      return $addressList->all();
     } else {
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
@@ -139,7 +144,9 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     string $accountKeyPath = null
   ): array {
     // todo: add offset + amount query parameters + check structure of derivationScheme etc.
-    $url = $this->generateUrl($storeId, $cryptoCode)."/preview";
+    $url = $this->getApiUrl([
+      "stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode, "preview"
+    ]);
     $headers = $this->getRequestHeaders();
     $method = 'POST';
     $body = json_encode([
@@ -149,10 +156,10 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     $response = $this->getHttpClient()->request($method, $url, $headers, $body);
 
     if ($response->getStatus() === 200) {
-      $addressList = new \BTCPayServer\Result\AddressList(
+      $addressList = new AddressList(
         json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR)
       );
-      return $addressList->getAddresses();
+      return $addressList->all();
     } else {
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
@@ -169,7 +176,7 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
    */
   public function removePaymentMethod(string $storeId, string $cryptoCode): bool
   {
-    $url = $this->generateUrl($storeId, $cryptoCode);
+    $url = $this->getApiUrl(["stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode]);
     $headers = $this->getRequestHeaders();
     $method = 'DELETE';
     $response = $this->getHttpClient()->request($method, $url, $headers);
@@ -214,7 +221,9 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     int $wordCount = 12,
     string $scriptPubKeyType = "Segwit"
   ): \BTCPayServer\Result\StorePaymentMethodOnChain {
-    $url = $this->generateUrl($storeId, $cryptoCode)."/generate";
+    $url = $this->getApiUrl([
+      "stores", $storeId, "payment-method", self::PAYMENT_TYPE_ON_CHAIN, $cryptoCode, "generate"
+    ]);
     $body = json_encode(
       [
         "existingMnemonic" => $existingMnemonic,
@@ -239,10 +248,5 @@ class StorePaymentMethodOnChain extends AbstractStorePaymentMethodClient
     } else {
       throw $this->getExceptionByStatusCode($method, $url, $response);
     }
-  }
-
-  private function generateUrl(string $storeId, string $cryptoCode): string
-  {
-    return $this->getApiUrl()."stores/".urlencode($storeId)."/payment-methods/".self::PAYMENT_TYPE_ON_CHAIN."/".urlencode($cryptoCode);
   }
 }

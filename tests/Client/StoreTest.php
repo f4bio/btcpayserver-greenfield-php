@@ -13,15 +13,14 @@ class StoreTest extends TestCase
 
   protected function setUp(): void
   {
-//    $dotenv = Dotenv::createMutable(__DIR__);
-
     $dotenv = Dotenv::createImmutable(__DIR__."/../../");
     $dotenv->load();
 
     $baseUrl = getenv("BTCPAY_SERVER_URL");
     $apiKey = getenv("BTCPAY_API_KEY");
 
-    $this->storeId = "";
+    $this->storeId = "abc";
+    $this->storeUrl = "https://localhost:8000";
     $this->client = new Store($baseUrl, $apiKey);
   }
 
@@ -33,6 +32,7 @@ class StoreTest extends TestCase
       $a = "ERROR: ".$t->getMessage();
     }
     $this->assertNotNull($a);
+    $this->assertIsArray($a);
   }
 
   public function testGetStore()
@@ -58,7 +58,7 @@ class StoreTest extends TestCase
   public function testCreateStore()
   {
     try {
-      $a = $this->client->createStore($this->storeId, "");
+      $a = $this->client->createStore($this->storeId, $this->storeUrl);
     } catch (\Throwable $t) {
       $a = "ERROR: ".$t->getMessage();
     }
