@@ -6,39 +6,6 @@ namespace BTCPayServer\Result;
 
 use BTCPayServer\Util\PreciseNumber;
 
-// REQUEST:
-// {
-//     "appName": "Kukkstarter",
-//     "title": "My crowdfund app",
-//     "description": "My app description",
-//     "enabled": true,
-//     "enforceTargetAmount": false,
-//     "startDate": 768658369,
-//     "endDate": 771336769,
-//     "targetCurrency": "BTC",
-//     "targetAmount": 420,
-//     "customCSSLink": "string",
-//     "mainImageUrl": "string",
-//     "embeddedCSS": "string",
-//     "perksTemplate": "test_perk:\r\n  price: 100\r\n  title: test perk\r\n  price_type: \"fixed\" \r\n  disabled: false",
-//     "notificationUrl": "string",
-//     "tagline": "I can"t believe it"s not butter",
-//     "disqusShortname": "string",
-//     "soundsEnabled": false,
-//     "animationsEnabled": false,
-//     "resetEveryAmount": 1,
-//     "resetEvery": "Never",
-//     "displayPerksValue": false,
-//     "sortPerksByPopularity": false,
-//     "sounds": [
-//       "https://github.com/ClaudiuHKS/AdvancedQuakeSounds/raw/master/sound/AQS/doublekill.wav"
-//     ],
-//     "animationColors": [
-//       "#0000FF",
-//       "#00FF00",
-//       "#FF0000"
-//     ]
-//   }
 // RESULT:
 // {
 //     "id": "3ki4jsAkN4u9rv1PUzj1odX4Nx7s",
